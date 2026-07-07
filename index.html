@@ -3,35 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>কোটিপতি (বাংলাদেশী মনোপলি)</title>
+    <title>কোটিপতি (বাংলাদেশী মনোপলি এডিশন)</title>
     <style>
         *, *::before, *::after { box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f4f8;
+            background-color: #f4f6f9;
             margin: 0;
-            padding: 20px;
+            padding: 10px;
             color: #2c3e50;
         }
-        h1 {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 5px;
-            font-size: 24px;
-        }
-        .subtitle {
-            text-align: center;
-            color: #7f8c8d;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-        .game-container {
-            display: block;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+        h1 { text-align: center; margin: 5px 0; font-size: 26px; color: #1e3799; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
         
-        /* 40 Cells Monopoly Board Design (11x11 Grid) */
+        /* Setup Screen */
+        #setup-screen {
+            max-width: 500px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .player-input-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+        .player-input-row input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+        .player-input-row select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: #f8f9fa;
+        }
+
+        /* Game Layout */
+        #game-screen { display: none; max-width: 1300px; margin: 0 auto; gap: 20px; }
+        
+        /* 11x11 Grid Board */
         .board {
             display: grid;
             grid-template-columns: repeat(11, 1fr);
@@ -41,296 +57,365 @@
             padding: 4px;
             border-radius: 8px;
             width: 100%;
-            max-width: 700px;
+            max-width: 720px;
             aspect-ratio: 1 / 1;
-            margin: 0 auto 20px auto;
+            position: relative;
         }
+        
+        /* Center Aesthetic Art */
+        .board-center {
+            grid-column: 2 / 11;
+            grid-row: 2 / 11;
+            background: #f1f2f6;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            border: 4px dashed #bdc581;
+        }
+        .aesthetic-art {
+            text-align: center;
+            opacity: 0.15;
+            font-size: 110px;
+            position: absolute;
+            user-select: none;
+            pointer-events: none;
+        }
+        .center-logo {
+            font-size: 32px;
+            font-weight: bold;
+            color: #b33939;
+            z-index: 1;
+            text-shadow: 1px 1px 0px #fff;
+        }
+        .center-sub { font-size: 14px; color: #4b5563; z-index: 1; margin-top: 5px; font-weight: bold;}
+
+        /* Cells */
         .cell {
             background-color: #fff;
-            padding: 4px;
+            padding: 3px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             font-size: 8px;
             font-weight: bold;
             text-align: center;
-            overflow: hidden;
-            word-break: break-word;
-        }
-        .cell-header {
-            height: 10px;
-            margin: -4px -4px 4px -4px;
-        }
-        
-        .control-panel {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            max-width: 700px;
-            margin: 0 auto;
-        }
-        .flex-row {
-            display: table;
-            width: 100%;
-            margin-bottom: 15px;
-        }
-        .flex-col {
-            display: table-cell;
-            width: 50%;
-            vertical-align: top;
-            padding: 5px;
-        }
-        .player-status {
-            padding: 10px;
-            border-left: 5px solid #ccc;
-            background: #fdfdfd;
-            border-radius: 4px;
-            box-shadow: inset 0 0 3px rgba(0,0,0,0.05);
-        }
-        .p0-border { border-color: #e74c3c; }
-        .p1-border { border-color: #3498db; }
-        .p2-border { border-color: #2ecc71; }
-        .p3-border { border-color: #f1c40f; }
-        
-        .dice-area {
-            text-align: center;
-            margin: 15px 0;
-        }
-        button {
-            background-color: #2ecc71;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 5px;
+            position: relative;
             cursor: pointer;
-            width: 100%;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
         }
-        button:hover { background-color: #27ae60; }
-        .log {
-            margin-top: 15px;
-            height: 150px;
-            overflow-y: auto;
-            background: #1e272e;
-            color: #0be881;
-            padding: 12px;
-            font-family: monospace;
-            font-size: 12px;
-            border-radius: 5px;
-            text-align: left;
-            line-height: 1.5;
+        .cell:hover { background-color: #f1f2f6; }
+        .cell-header { height: 12px; margin: -3px -3px 2px -3px; }
+        
+        /* Infrastructure (Houses/Hotels) Visualization */
+        .infra-container {
+            display: flex;
+            justify-content: center;
+            gap: 1px;
+            margin-top: 1px;
+            height: 8px;
         }
-        .token {
-            display: inline-block;
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            margin: 1px;
-            text-align: center;
-            color: white;
-            font-size: 8px;
-            line-height: 14px;
-        }
-        .token-p0 { background-color: #e74c3c; }
-        .token-p1 { background-color: #3498db; }
-        .token-p2 { background-color: #2ecc71; }
-        .token-p3 { background-color: #f1c40f; }
+        .house-dot { width: 6px; height: 6px; background: #2ecc71; border-radius: 1px; }
+        .hotel-bar { width: 20px; height: 6px; background: #e74c3c; border-radius: 1px; }
 
-        /* Surprise Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 100;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.6);
+        /* Tokens */
+        .token-space { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px; margin-top: auto; }
+        .token { width: 12px; height: 12px; border-radius: 50%; border: 1px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+
+        /* Sidebar Panels */
+        .sidebar { flex: 1; display: flex; flex-direction: column; gap: 15px; max-width: 520px; }
+        .panel { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        
+        /* Live Animated Dice */
+        .dice-box { display: flex; justify-content: center; gap: 15px; margin: 10px 0; }
+        .dice {
+            width: 45px; height: 45px; background: white; border: 2px solid #333;
+            border-radius: 8px; display: flex; justify-content: center; align-items: center;
+            font-size: 22px; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
         }
-        .modal-content {
-            background-color: #fff;
-            margin: 15% auto;
-            padding: 25px;
-            border-radius: 10px;
-            width: 80%;
-            max-width: 450px;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            animation: popIn 0.3s ease;
+        .rolling { animation: shake 0.3s infinite; }
+        @keyframes shake {
+            0% { transform: translate(2px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            100% { transform: translate(1px, -1px) rotate(0deg); }
         }
-        @keyframes popIn {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-        .modal-title {
-            font-size: 22px;
-            margin-bottom: 15px;
-            font-weight: bold;
-        }
-        .modal-body {
-            font-size: 16px;
-            margin-bottom: 20px;
-            color: #34495e;
-            line-height: 1.6;
-        }
-        .modal-btn {
-            background-color: #3498db;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            font-size: 14px;
-            cursor: pointer;
-        }
+
+        /* Tabs & Lists */
+        .tabs { display: flex; gap: 5px; margin-bottom: 10px; }
+        .tab-btn { flex: 1; padding: 8px; background: #e2e8f0; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .tab-btn.active { background: #3498db; color: white; }
+        .tab-content { display: none; height: 180px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; border-radius: 4px; background: #fafafa; font-size: 12px; }
+        .tab-content.active { display: block; }
+        
+        .market-item { display: flex; justify-content: space-between; align-items: center; padding: 6px; border-bottom: 1px solid #eee; }
+        .btn-small { padding: 4px 8px; font-size: 11px; background: #2ecc71; color: white; border: none; border-radius: 3px; cursor: pointer; }
+
+        /* General Button */
+        .btn-main { background: #2ecc71; color: white; border: none; padding: 12px; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; width: 100%; box-shadow: 0 3px 6px rgba(0,0,0,0.1); }
+        .btn-main:hover { background: #27ae60; }
+        .btn-main:disabled { background: #bdc3c7; cursor: not-allowed; }
+
+        /* Modals */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+        .modal-content { background: white; margin: 12% auto; padding: 20px; border-radius: 10px; width: 90%; max-width: 420px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+        
+        /* Share Floating Area */
+        .share-box { margin-top: 10px; padding: 8px; background: #e3f2fd; border-radius: 5px; text-align: center; font-size: 12px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <h1>💰 কোটিপতি: ধনী হবার লড়াই 💰</h1>
-    <div class="subtitle">বাংলাদেশী ৪০ ঘরের সম্পূর্ণ মনোপলি বোর্ড (ভাগ্য পরীক্ষা ও পপ-আপ কার্ড সহ)</div>
-    
-    <div class="game-container">
-        <div class="board" id="board"></div>
+    <h1>💰 কোটিপতি: অল-ইন-ওয়ান সুপার এডিশন 💰</h1>
 
-        <div class="control-panel">
-            <div class="flex-row">
-                <div class="flex-col">
-                    <h3>খেলোয়াড়দের অবস্থা</h3>
-                    <div id="players-info"></div>
-                </div>
-                <div class="flex-col" style="text-align: center;">
-                    <h3 id="current-turn" style="color: #d35400; margin-top: 20px;">চাল: প্লেয়ার ১</h3>
-                    <div class="dice-area">
-                        <button id="roll-btn" onclick="playTurn()">🎲 ছক্কা চালুন (Roll Dice)</button>
-                    </div>
+    <!-- 1. SETUP SCREEN -->
+    <div id="setup-screen">
+        <h3>👥 খেলোয়াড় রেজিস্ট্রেশন</h3>
+        <p style="font-size: 12px; color: #7f8c8d; margin-bottom: 20px;">নাম লিখুন এবং আলাদা আলাদা গুটি সিলেক্ট করুন</p>
+        <div id="setup-rows"></div>
+        <button class="btn-main" onclick="startGame()">🎲 গেম বোর্ড চালু করুন</button>
+    </div>
+
+    <!-- 2. MAIN GAME SCREEN -->
+    <div id="game-screen">
+        <!-- Grid Board -->
+        <div class="board" id="board">
+            <!-- Center Aesthetic Art Section -->
+            <div class="board-center">
+                <div class="aesthetic-art">🚢🌾</div>
+                <div class="center-logo">কোটিপতি</div>
+                <div class="center-sub">💸 বাংলাদেশ এডিশন 💸</div>
+                <!-- Local Share Link Option -->
+                <div class="share-box">
+                    🔗 ইনভাইট লিংক: <span id="live-url" style="color:#0056b3;"></span>
                 </div>
             </div>
-            <div class="log" id="game-log">খেলা শুরু করার জন্য ছক্কা চালুন...<br></div>
+        </div>
+
+        <!-- Sidebar Panels -->
+        <div class="sidebar">
+            <!-- Action Panel -->
+            <div class="panel">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3 id="current-turn-title" style="color: #b33939; margin: 0;">চাল: লোড হচ্ছে...</h3>
+                    <div id="player-cash-badge" style="font-weight: bold; font-size: 16px; background: #27ae60; color: white; padding: 4px 10px; border-radius: 20px;">৳২০০০</div>
+                </div>
+                
+                <!-- Live Animated Dice -->
+                <div class="dice-box">
+                    <div id="dice1" class="dice">১</div>
+                    <div id="dice2" class="dice">১</div>
+                </div>
+                <button id="roll-btn" class="btn-main" onclick="rollDiceLive()">🎲 ছক্কা চালুন (Roll)</button>
+            </div>
+
+            <!-- Stats & Real Estate Info (Clicking Cell Shows This) -->
+            <div class="panel" id="property-card-panel" style="background: #fdfefe; border-left: 5px solid #34495e;">
+                <h4 id="inspect-name" style="margin:0 0 5px 0;">🔍 ঘরের বিবরণ</h4>
+                <div id="inspect-details" style="font-size: 12px; color: #555;">বোর্ডের যেকোনো ঘরে ক্লিক করে তার দাম, বাড়ি/হোটেল ভাড়া ও ট্যাক্সের তালিকা এখানে দেখুন।</div>
+                <div id="build-actions" style="margin-top: 10px; display: none; gap: 5px;">
+                    <button class="btn-small" style="background:#2980b9;" onclick="buildStructure('house')">🏠 বাড়ি বানান</button>
+                    <button class="btn-small" style="background:#d35400;" onclick="buildStructure('hotel')">🏨 🌆 হোটেল তুলুন</button>
+                </div>
+            </div>
+
+            <!-- Tabs: History, Marketplace, Player Assets -->
+            <div class="panel">
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="switchTab('tab-log')">📋 হিস্ট্রি লগ</button>
+                    <button class="tab-btn" onclick="switchTab('tab-market')">🛒 মার্কেটপ্লেস</button>
+                    <button class="tab-btn" onclick="switchTab('tab-status')">💼 সবার সম্পদ</button>
+                </div>
+                
+                <!-- History Tab -->
+                <div id="tab-log" class="tab-content active"></div>
+                
+                <!-- Marketplace Tab -->
+                <div id="tab-market" class="tab-content">
+                    <p style="font-size:11px; color:#7f8c8d; margin:0 0 5px 0;">*নিজের প্রপার্টিতে ক্লিক করে ইচ্ছেমতো দামে বিক্রির জন্য এখানে তুলতে পারেন।</p>
+                    <div id="market-list"></div>
+                </div>
+                
+                <!-- Assets Status Tab -->
+                <div id="tab-status" class="tab-content"></div>
+            </div>
         </div>
     </div>
 
-    <!-- Surprise Card Modal Container -->
-    <div id="cardModal" class="modal">
+    <!-- 3. POPUP MODAL (For Chance Cards & Market Negotiation) -->
+    <div id="gameModal" class="modal">
         <div class="modal-content">
-            <div id="mTitle" class="modal-title"></div>
-            <div id="mBody" class="modal-body"></div>
-            <button class="modal-btn" onclick="closeModal()">ঠিক আছে</button>
+            <h3 id="modalTitle"></h3>
+            <p id="modalBody"></p>
+            <div id="modalCustomActions" style="margin-top:15px; display:flex; gap:10px; justify-content:center;"></div>
+            <button id="modalCloseBtn" class="btn-main" style="margin-top:15px; background:#34495e;" onclick="closeModal()">ঠিক আছে</button>
         </div>
     </div>
 
 <script>
-    // 40 cells definition matching classic Monopoly layout
+    // 40 Box Monopoly Dataset Matching Classic Layout perfectly
     const boardData = [
-        { id: 0, name: "শুরু (GO)", type: "special", color: "#2ecc71", price: 0, rent: 0 },
-        { id: 1, name: "সায়েদাবাদ", type: "property", color: "#8b5a2b", price: 1200, rent: 100 },
-        { id: 2, name: "জনকল্যাণ তহবিল", type: "chest", color: "", price: 0, rent: 0 },
-        { id: 3, name: "গাবতলী", type: "property", color: "#8b5a2b", price: 1500, rent: 120 },
-        { id: 4, name: "আয়কর (Income Tax)", type: "tax", color: "", price: 0, rent: 2000 },
-        { id: 5, name: "সদরঘাট লঞ্চ টার্মিনাল", type: "transport", color: "#7f8c8d", price: 4000, rent: 500 },
-        { id: 6, name: "মিরপুর-১০", type: "property", color: "#3498db", price: 2000, rent: 160 },
-        { id: 7, name: "ভাগ্যের চাকা (Chance)", type: "chance", color: "", price: 0, rent: 0 },
-        { id: 8, name: "মিরপুর-১২", type: "property", color: "#3498db", price: 2200, rent: 180 },
-        { id: 9, name: "উত্তরা", type: "property", color: "#3498db", price: 2600, rent: 220 },
-        { id: 10, name: "জেলখানা (Visiting)", type: "special", color: "#f1c40f", price: 0, rent: 0 },
-        { id: 11, name: "ফার্মগেট", type: "property", color: "#e91e63", price: 3000, rent: 260 },
-        { id: 12, name: "ডেসকো (বিদ্যুৎ)", type: "utility", color: "#a4b0be", price: 3000, rent: 300 },
-        { id: 13, name: "কারওয়ান বাজার", type: "property", color: "#e91e63", price: 3200, rent: 280 },
-        { id: 14, name: "শাহবাগ", type: "property", color: "#e91e63", price: 3600, rent: 320 },
-        { id: 15, name: "কমলাপুর স্টেশন", type: "transport", color: "#7f8c8d", price: 4000, rent: 500 },
-        { id: 16, name: "পল্টন", type: "property", color: "#ff9800", price: 4000, rent: 350 },
-        { id: 17, name: "জনকল্যাণ তহবিল", type: "chest", color: "", price: 0, rent: 0 },
-        { id: 18, name: "মতিঝিল", type: "property", color: "#ff9800", price: 4200, rent: 380 },
-        { id: 19, name: "দিলকুশা", type: "property", color: "#ff9800", price: 4600, rent: 420 },
-        { id: 20, name: "ফ্রি পার্কিং", type: "special", color: "#95a5a6", price: 0, rent: 0 },
-        { id: 21, name: "ধানমন্ডি", type: "property", color: "#e74c3c", price: 5000, rent: 480 },
-        { id: 22, name: "ভাগ্যের চাকা (Chance)", type: "chance", color: "", price: 0, rent: 0 },
-        { id: 23, name: "মোহাম্মদপুর", type: "property", color: "#e74c3c", price: 5200, rent: 500 },
-        { id: 24, name: "লালমাটিয়া", type: "property", color: "#e74c3c", price: 5600, rent: 550 },
-        { id: 25, name: "মহাখালী টার্মিনাল", type: "transport", color: "#7f8c8d", price: 4000, rent: 500 },
-        { id: 26, name: "বনানী", type: "property", color: "#ecc94b", price: 6000, rent: 600 },
-        { id: 27, name: "মহাখালী", type: "property", color: "#ecc94b", price: 6200, rent: 620 },
-        { id: 28, name: "ওয়াসা (পানি)", type: "utility", color: "#a4b0be", price: 3000, rent: 300 },
-        { id: 29, name: "নিকেতন", type: "property", color: "#ecc94b", price: 6600, rent: 680 },
-        { id: 30, name: "জেলে যাও", type: "special", color: "#962d2d", price: 0, rent: 0 },
-        { id: 31, name: "গুলশান-১", type: "property", color: "#27ae60", price: 7000, rent: 750 },
-        { id: 32, name: "গুলশান-২", type: "property", color: "#27ae60", price: 7500, rent: 800 },
-        { id: 33, name: "জনকল্যাণ তহবিল", type: "chest", color: "", price: 0, rent: 0 },
-        { id: 34, name: "বারিধারা", type: "property", color: "#27ae60", price: 8000, rent: 900 },
-        { id: 35, name: "হযরত শাহজালাল বিমানবন্দর", type: "transport", color: "#7f8c8d", price: 5000, rent: 700 },
-        { id: 36, name: "ভাগ্যের চাকা (Chance)", type: "chance", color: "", price: 0, rent: 0 },
-        { id: 37, name: "বсуন্ধরা আ/এ", type: "property", color: "#9b59b6", price: 9000, rent: 1100 },
-        { id: 38, name: "ভ্যাট (VAT Tax)", type: "tax", color: "", price: 0, rent: 1500 },
-        { id: 39, name: "পূর্বাচল", type: "property", color: "#9b59b6", price: 12000, rent: 1600 }
+        { id: 0, name: "শুরু (GO)", type: "special", color: "#2ecc71", price: 0, baseRent: 0, houseCost: 0 },
+        { id: 1, name: "সায়েদাবাদ", type: "property", color: "#8b5a2b", price: 1200, baseRent: 100, houseCost: 500 },
+        { id: 2, name: "সুযোগ গ্রহণ (Chance)", type: "chance", color: "", price: 0, baseRent: 0, houseCost: 0 },
+        { id: 3, name: "গাবতলী", type: "property", color: "#8b5a2b", price: 1500, baseRent: 120, houseCost: 500 },
+        { id: 4, name: "আয়কর (Tax)", type: "tax", color: "", price: 0, baseRent: 2000, houseCost: 0 },
+        { id: 5, name: "সদরঘাট টার্মিনাল", type: "transport", color: "#7f8c8d", price: 4000, baseRent: 500, houseCost: 0 },
+        { id: 6, name: "মিরপুর-১০", type: "property", color: "#3498db", price: 2000, baseRent: 160, houseCost: 500 },
+        { id: 7, name: "भाग्य পরীক্ষা (Chest)", type: "chest", color: "", price: 0, baseRent: 0, houseCost: 0 },
+        { id: 8, name: "মিরপুর-১২", type: "property", color: "#3498db", price: 2200, baseRent: 180, houseCost: 500 },
+        { id: 9, name: "উত্তরা", type: "property", color: "#3498db", price: 2600, baseRent: 220, houseCost: 500 },
+        { id: 10, name: "জেলখানা (Visiting)", type: "special", color: "#f1c40f", price: 0, baseRent: 0, houseCost: 0 },
+        { id: 11, name: "ফার্মগেট", type: "property", color: "#e91e63", price: 3000, baseRent: 260, houseCost: 1000 },
+        { id: 12, name: "ডেসকো (বিদ্যুৎ)", type: "utility", color: "#a4b0be", price: 3000, baseRent: 300, houseCost: 0 },
+        { id: 13, name: "কারওয়ান বাজার", type: "property", color: "#e91e63", price: 3200, baseRent: 280, houseCost: 1000 },
+        { id: 14, name: "শাহবাগ", type: "property", color: "#e91e63", price: 3600, baseRent: 320, houseCost: 1000 },
+        { id: 15, name: "কমলাপুর স্টেশন", type: "transport", color: "#7f8c8d", price: 4000, baseRent: 500, houseCost: 0 },
+        { id: 16, name: "পল্টন", type: "property", color: "#ff9800", price: 4000, baseRent: 350, houseCost: 1000 },
+        { id: 17, name: "সুযোগ গ্রহণ (Chance)", type: "chance", color: "", price: 0, baseRent: 0, houseCost: 0 },
+        { id: 18, name: "মতিঝিল", type: "property", color: "#ff9800", price: 4200, baseRent: 380, houseCost: 1000 },
+        { id: 19, name: "দিলকুশা", type: "property", color: "#ff9800", price: 4600, baseRent: 420, houseCost: 1000 },
+        { id: 20, name: "ফ্রি পার্কিং", type: "special", color: "#95a5a6", price: 0, baseRent: 0, houseCost: 0 },
+        { id: 21, name: "ধানমন্ডি", type: "property", color: "#e74c3c", price: 5000, baseRent: 480, houseCost: 1500 },
+        { id: 22, name: "भाग्य পরীক্ষা (Chest)", type: "chest", color: "", price: 0, baseRent: 0, houseCost: 0 },
+        { id: 23, name: "মোহাম্মদপুর", type: "property", color: "#e74c3c", price: 5200, baseRent: 500, houseCost: 1500 },
+        { id: 24, name: "লালমাটিয়া", type: "property", color: "#e74c3c", price: 5600, baseRent: 550, houseCost: 1500 },
+        { id: 25, name: "মহাখালী টার্মিনাল", type: "transport", color: "#7f8c8d", price: 4000, baseRent: 500, houseCost: 0 },
+        { id: 26, name: "বনানী", type: "property", color: "#ecc94b", price: 6000, baseRent: 600, houseCost: 1500 },
+        { id: 27, name: "মহাখালী", type: "property", color: "#ecc94b", price: 6200, baseRent: 620, houseCost: 1500 },
+        { id: 28, name: "ওয়াসা (পানি)", type: "utility", color: "#a4b0be", price: 3000, baseRent: 300, houseCost: 0 },
+        { id: 29, name: "নিকেতন", type: "property", color: "#ecc94b", price: 6600, baseRent: 680, houseCost: 1500 },
+        { id: 30, name: "জেলে যাও", type: "special", color: "#962d2d", price: 0, baseRent: 0, houseCost: 0 },
+        { id: 31, name: "গুলশান-১", type: "property", color: "#27ae60", price: 7000, baseRent: 750, houseCost: 2000 },
+        { id: 32, name: "গুলশান-২", type: "property", color: "#27ae60", price: 7500, baseRent: 800, houseCost: 2000 },
+        { id: 33, name: "সুযোগ গ্রহণ (Chance)", type: "chance", color: "", price: 0, baseRent: 0, houseCost: 0 },
+        { id: 34, name: "বারিধারা", type: "property", color: "#27ae60", price: 8000, baseRent: 900, houseCost: 2000 },
+        { id: 35, name: "শাহজালাল বিমানবন্দর", type: "transport", color: "#7f8c8d", price: 5000, baseRent: 700, houseCost: 0 },
+        { id: 36, name: "भाग्य পরীক্ষা (Chest)", type: "chest", color: "", price: 0, baseRent: 0, houseCost: 0 },
+        { id: 37, name: "বসুন্ধরা আ/এ", type: "property", color: "#9b59b6", price: 9000, baseRent: 1100, houseCost: 2000 },
+        { id: 38, name: "ভ্যাট ট্যাক্স", type: "tax", color: "", price: 0, baseRent: 1500, houseCost: 0 },
+        { id: 39, name: "পূর্বাচল", type: "property", color: "#9b59b6", price: 12000, baseRent: 1600, houseCost: 2000 }
     ];
 
-    // Surprise Card Deck definitions
-    const chanceCards = [
-        { text: "🚥 সিগন্যাল ভেঙেছেন! ট্রাফিক জ্যামে পুলিশ আপনাকে ৫০০ টাকা জরিমানা করেছে।", money: -500 },
-        { text: "🎉 লটারি জিতেছেন! ব্যাংক আপনাকে ৩,০০০ টাকা পুরস্কার দিল।", money: 3000 },
-        { text: "📈 শেয়ার বাজারে দারুণ লাভ! ২,৫০০ টাকা প্রফিট পেলেন।", money: 2500 },
-        { text: "💸 পকেটমার! সদরঘাটে আপনার ১,০০০ টাকা হারিয়ে গেল।", money: -1000 },
-        { text: "🎁 আপনার জন্মদিন! ব্যাংক থেকে উপহারস্বরূপ ১,৫০০ টাকা পেলেন।", money: 1500 }
-    ];
-
-    const chestCards = [
-        { text: "💍 মামাতো ভাইয়ের বিয়ে! বন্ধুদের রেস্টুরেন্টে খাওয়াতে গিয়ে ২,০০০ টাকা খরচ হলো।", money: -2000 },
-        { text: "🏦 ভুলবশত ব্যাংকের লাভ! আপনার অ্যাকাউন্টে ভুল করে ১,৫০০ টাকা চলে এসেছে।", money: 1500 },
-        { text: "🧾 ইনকাম ট্যাক্স রিটার্ন রিফান্ড পেলেন ১,০০০ টাকা।", money: 1000 },
-        { text: "🏥 স্কয়ার হাসপাতালে মেডিকেল চেকআপের জন্য ১,২০০ টাকা বিল দিলেন।", money: -1200 },
-        { text: "🥇 এলাকার টুর্নামেন্টে চ্যাম্পিয়ন হয়ে ২,৫০০ টাকা পুরস্কার পেলেন!", money: 2500 }
-    ];
-
-    // Grid coordinates mapping for 11x11 perimeter
+    // Grid Mapping for Perimeter Layout (11x11 Grid Layout)
     const gridMap = {};
     for (let i = 0; i <= 10; i++) gridMap[i] = { r: 11, c: 11 - i };
     for (let i = 11; i <= 19; i++) gridMap[i] = { r: 11 - (i - 10), c: 1 };
     for (let i = 20; i <= 30; i++) gridMap[i] = { r: 1, c: i - 19 };
     for (let i = 31; i <= 39; i++) gridMap[i] = { r: i - 29, c: 11 };
 
-    // Game state
-    let players = [
-        { id: 0, name: "প্লেয়ার ১ (লাল)", money: 20000, pos: 0 },
-        { id: 1, name: "প্লেয়ার ২ (নীল)", money: 20000, pos: 0 },
-        { id: 2, name: "প্লেয়ার ৩ (সবুজ)", money: 20000, pos: 0 },
-        { id: 3, name: "প্লেয়ার ৪ (হলুদ)", money: 20000, pos: 0 }
+    // Surprise Decks
+    const surpriseCards = [
+        { title: "🎰 লটারি জয়!", msg: "বাংলাদেশ সরকারের প্রাইজবন্ড ড্র-তে আপনার প্রথম পুরস্কার লেগেছে! ব্যাংক থেকে ৩,০০০ টাকা বোনাস পেলেন।", money: 3000 },
+        { title: "🚓 ট্রাফিক জ্যাম জরিমানা!", msg: "রমনা সিগন্যালে ট্রাফিক আইন অমান্য করায় ট্রাফিক পুলিশ আপনাকে ৮০০ টাকা ফাইন করেছে।", money: -800 },
+        { title: "🍲 কাচ্চি পার্টি!", msg: "আপনার প্রমোশন উপলক্ষে বন্ধুদের সুলতানস ডাইনে কাচ্চি খাওয়াতে গিয়ে ১,৫০০ টাকা খরচ হলো।", money: -1500 },
+        { title: "📈 রেমিট্যান্স বোনাস!", msg: "বিদেশ থেকে মামা আপনার নামে রেমিট্যান্স পাঠিয়েছেন। ব্যাংক আপনাকে ২,৫০০ টাকা অতিরিক্ত দিল।", money: 2500 }
     ];
-    let turn = 0;
-    let owners = {}; // cellId -> playerId
 
-    const boardEl = document.getElementById('board');
+    // Colors list
+    const availableColors = [
+        { code: "#e74c3c", name: "লাল" },
+        { code: "#3498db", name: "নীল" },
+        { code: "#2ecc71", name: "সবুজ" },
+        { code: "#f1c40f", name: "হলুদ" }
+    ];
+
+    // Game Core State
+    let players = [];
+    let turn = 0;
+    let owners = {};         // cellId -> playerIndex
+    let houses = {};        // cellId -> totalHouses (1-4)
+    let hotels = {};        // cellId -> totalHotels (0-1)
+    let marketplace = [];   // list of items put for sale
+    let selectedCellId = null;
+
+    // Render Setup Options dynamically
+    const setupRows = document.getElementById('setup-rows');
+    for (let i = 0; i < 4; i++) {
+        setupRows.innerHTML += `
+            <div class="player-input-row">
+                <input type="text" id="pname-${i}" value="প্লেয়ার ${i+1}">
+                <select id="pcolor-${i}">
+                    ${availableColors.map((c, idx) => `<option value="${c.code}" ${idx===i?'selected':''}>${c.name}</option>`).join('')}
+                </select>
+            </div>
+        `;
+    }
+
+    // Live URL Share Generation
+    document.getElementById('live-url').innerText = window.location.href.split('?')[0];
+
+    function startGame() {
+        // Enforce same color restriction validation
+        let selectedColors = [];
+        for(let i=0; i<4; i++) {
+            let col = document.getElementById(`pcolor-${i}`).value;
+            if(selectedColors.includes(col)) {
+                alert("🚨 দুঃখিত! দু'জন প্লেয়ার একই কালার নিতে পারবে না। ভিন্ন কালার সিলেক্ট করুন।");
+                return;
+            }
+            selectedColors.push(col);
+        }
+
+        // Initialize state
+        for(let i=0; i<4; i++) {
+            players.push({
+                id: i,
+                name: document.getElementById(`pname-${i}`).value || `প্লেয়ার ${i+1}`,
+                color: document.getElementById(`pcolor-${i}`).value,
+                money: 25000,
+                pos: 0
+            });
+        }
+
+        document.getElementById('setup-screen').style.display = 'none';
+        document.getElementById('game-screen').style.display = 'flex';
+        
+        logAction("🎬 খেলা শুরু হয়েছে! সবার প্রারম্ভিক বাজেট ২৫,০০০ টাকা।");
+        updateUI();
+    }
 
     function drawBoard() {
-        boardEl.innerHTML = '';
+        const boardEl = document.getElementById('board');
+        // Delete previous cells if any
+        document.querySelectorAll('.cell').forEach(e => e.remove());
+
         for (let i = 0; i < 40; i++) {
             const cell = boardData[i];
             const coord = gridMap[i];
-            
             const cellEl = document.createElement('div');
             cellEl.className = 'cell';
             cellEl.style.gridRow = coord.r;
             cellEl.style.gridColumn = coord.c;
+            cellEl.onclick = () => inspectCell(i);
 
             let headerHtml = (cell.type === 'property' || cell.type === 'transport' || cell.type === 'utility') 
                 ? `<div class="cell-header" style="background-color:${cell.color || '#7f8c8d'}"></div>` : '';
             
-            let priceHtml = cell.price > 0 ? `<div style="color:#7f8c8d; font-size:7px;">৳${cell.price}</div>` : '';
-            let ownerText = owners[i] !== undefined ? `<span style="color:purple; font-size:7px;">[P${owners[i]+1}]</span>` : '';
+            // Build Structure Icons
+            let infraHtml = '<div class="infra-container">';
+            if (hotels[i]) infraHtml += '<div class="hotel-bar"></div>';
+            else if (houses[i]) {
+                for(let h=0; h<houses[i]; h++) infraHtml += '<div class="house-dot"></div>';
+            }
+            infraHtml += '</div>';
 
-            let tokensHtml = '<div style="margin-top:2px;">';
+            let ownerIndicator = owners[i] !== undefined ? `<span style="color:${players[owners[i]].color};">[P${owners[i]+1}]</span>` : '';
+            let priceHtml = cell.price > 0 ? `<div style="color:#7f8c8d; font-size:7px;">৳${cell.price}</div>` : '';
+
+            let tokensHtml = '<div class="token-space">';
             players.forEach(p => {
-                if (p.pos === i) {
-                    tokensHtml += `<span class="token token-p${p.id}">P${p.id+1}</span>`;
-                }
+                if (p.pos === i) tokensHtml += `<div class="token" style="background:${p.color}" title="${p.name}"></div>`;
             });
             tokensHtml += '</div>';
 
             cellEl.innerHTML = `
                 <div>
                     ${headerHtml}
-                    <span style="display:block; line-height:1;">${cell.name}</span> ${ownerText}
+                    ${infraHtml}
+                    <span style="display:block; line-height:1.1;">${cell.name}</span> ${ownerIndicator}
                 </div>
                 <div>
                     ${priceHtml}
@@ -341,113 +426,270 @@
         }
     }
 
-    function updateUI() {
-        drawBoard();
-        const infoEl = document.getElementById('players-info');
-        infoEl.innerHTML = players.map(p => `
-            <div class="player-status p${p.id}-border" style="margin-bottom:5px;">
-                <strong>${p.name}</strong>: ৳${p.money}
-            </div>
-        `).join('');
-        document.getElementById('current-turn').innerText = `চাল: ${players[turn].name}`;
-    }
-
-    function logMessage(msg) {
-        const log = document.getElementById('game-log');
-        log.innerHTML += msg + "<br>";
-        log.scrollTop = log.scrollHeight;
-    }
-
-    // Modal Control Functions
-    function showModal(title, text, color) {
-        document.getElementById('mTitle').innerText = title;
-        document.getElementById('mTitle').style.color = color;
-        document.getElementById('mBody').innerText = text;
-        document.getElementById('cardModal').style.display = "block";
-        document.getElementById('roll-btn').disabled = true; // চাল দেওয়া সাময়িক বন্ধ
-    }
-
-    function closeModal() {
-        document.getElementById('cardModal').style.display = "none";
-        document.getElementById('roll-btn').disabled = false;
+    function rollDiceLive() {
+        const btn = document.getElementById('roll-btn');
+        const d1 = document.getElementById('dice1');
+        const d2 = document.getElementById('dice2');
         
-        // পরের প্লেয়ারের চালে যাওয়া
-        turn = (turn + 1) % 4;
-        updateUI();
+        btn.disabled = true;
+        d1.classList.add('rolling');
+        d2.classList.add('rolling');
+
+        setTimeout(() => {
+            let roll1 = Math.floor(Math.random() * 6) + 1;
+            let roll2 = Math.floor(Math.random() * 6) + 1;
+            let total = roll1 + roll2;
+
+            d1.classList.remove('rolling');
+            d2.classList.remove('rolling');
+            d1.innerText = roll1;
+            d2.innerText = roll2;
+
+            executeTurn(total);
+        }, 800);
     }
 
-    function playTurn() {
+    function executeTurn(steps) {
         let p = players[turn];
-        let dice1 = Math.floor(Math.random() * 6) + 1;
-        let dice2 = Math.floor(Math.random() * 6) + 1;
-        let totalDice = dice1 + dice2;
-        
-        logMessage(`🎲 <strong>${p.name}</strong> ছক্কা চেলেছেন: [${dice1}, ${dice2}] = <strong>${totalDice}</strong>`);
-
         let oldPos = p.pos;
-        p.pos = (p.pos + totalDice) % 40;
+        p.pos = (p.pos + steps) % 40;
+
+        logAction(`🎲 <strong>${p.name}</strong> চাল চেলে মোট <strong>${steps}</strong> পেলেন।`);
 
         if (p.pos < oldPos) {
             p.money += 2000;
-            logMessage(`💰 ${p.name} 'শুরু' ঘর পার হওয়ায় ২০০০ টাকা বোনাস পেলেন!`);
+            logAction(`💰 ${p.name} 'শুরু' ঘর অতিক্রম করায় ব্যাংক বোনাস ৳২০০০ পেলেন!`);
         }
 
-        let currentCell = boardData[p.pos];
-        logMessage(`📍 অবস্থান: <strong>${currentCell.name}</strong>`);
+        let cell = boardData[p.pos];
+        logAction(`📍 বর্তমান ঘর: <strong>${cell.name}</strong>`);
 
-        let requireModalCloseChangeTurn = true;
+        let dynamicModal = false;
 
-        if (currentCell.name === "জেলে যাও") {
-            p.pos = 10; 
-            logMessage(`👮 ${p.name} সোজা জেলখানায় চলে গেলেন!`);
-        } else if (currentCell.type === "tax") {
-            p.money -= currentCell.rent;
-            logMessage(`💸 ${p.name} ব্যাংককে ৳${currentCell.rent} ট্যাক্স দিলেন।`);
-        } else if (currentCell.type === "property" || currentCell.type === "transport" || currentCell.type === "utility") {
-            let owner = owners[p.pos];
-            if (owner === undefined) {
-                if (p.money >= currentCell.price) {
-                    p.money -= currentCell.price;
-                    owners[p.pos] = p.id;
-                    logMessage(`🏠 ${p.name} ৳${currentCell.price} দিয়ে এলাকাটি কিনে নিলেন!`);
-                } else {
-                    logMessage(`💸 টাকা কম থাকায় ${p.name} জায়গাটি কিনতে পারলেন না।`);
+        if (cell.name === "জেলে যাও") {
+            p.pos = 10;
+            logAction(`👮 ট্রাফিক আইন বা দুর্নীতির দায়ে ${p.name} সরাসরি জেলখানায় স্থানান্তরিত হলেন!`);
+        } else if (cell.type === "tax") {
+            p.money -= cell.baseRent;
+            logAction(`💸 ${p.name} রাজকোষে ৳${cell.baseRent} কর পরিশোধ করলেন।`);
+        } else if (cell.type === "property" || cell.type === "transport" || cell.type === "utility") {
+            let ownerIdx = owners[p.pos];
+            if (ownerIdx === undefined) {
+                // Instantly Auto buy if has money
+                if (p.money >= cell.price) {
+                    p.money -= cell.price;
+                    owners[p.pos] = turn;
+                    logAction(`🏠 ${p.name} নিজের ইচ্ছায় ৳${cell.price} দিয়ে <strong>${cell.name}</strong> কিনে নিলেন!`);
                 }
-            } else if (owner !== p.id) {
-                let rent = currentCell.rent;
-                p.money -= rent;
-                players[owner].money += rent;
-                logMessage(`💸 এটি ${players[owner].name}-এর জায়গা! ${p.name} ৳${rent} ভাড়া দিলেন।`);
+            } else if (ownerIdx !== turn) {
+                // Calculate Dynamic Rent based on Houses and Hotels
+                let finalRent = cell.baseRent;
+                if(houses[p.pos]) finalRent += (houses[p.pos] * (cell.baseRent * 1.5));
+                if(hotels[p.pos]) finalRent += (cell.baseRent * 6);
+
+                p.money -= finalRent;
+                players[ownerIdx].money += finalRent;
+                logAction(`💸 এটি ${players[ownerIdx].name} এর জমি! ${p.name} মোট ৳${finalRent.toFixed(0)} ভাড়া দিলেন।`);
             }
-        } else if (currentCell.type === "chance") {
-            // Pick random chance card
-            let card = chanceCards[Math.floor(Math.random() * chanceCards.length)];
+        } else if (cell.type === "chance" || cell.type === "chest") {
+            let card = surpriseCards[Math.floor(Math.random() * surpriseCards.length)];
             p.money += card.money;
-            logMessage(`🃏 ভাগ্যের চাকা: ${card.text}`);
-            showModal("🔮 ভাগ্যের চাকা (Chance Card)", card.text, "#e67e22");
-            requireModalCloseChangeTurn = false; // টার্ন পরিবর্তন ক্লোজ বাটনে হবে
-        } else if (currentCell.type === "chest") {
-            // Pick random chest card
-            let card = chestCards[Math.floor(Math.random() * chestCards.length)];
-            p.money += card.money;
-            logMessage(`🎁 জনকল্যাণ তহবিল: ${card.text}`);
-            showModal("🏢 জনকল্যাণ তহবিল (Community Chest)", card.text, "#2980b9");
-            requireModalCloseChangeTurn = false; 
+            showGameModal(card.title, card.msg);
+            logAction(`🃏 কার্ড রিভিল: ${card.title} -> ${card.msg}`);
+            dynamicModal = true;
         }
 
-        if (p.money <= 0) {
-            logMessage(`❌ 💥 <strong>${p.name} দেউলিয়া হয়ে গেছেন!</strong>`);
-        }
-
-        if (requireModalCloseChangeTurn) {
-            turn = (turn + 1) % 4;
-            updateUI();
-        } else {
-            drawBoard(); // শুধু অবস্থান দেখানোর জন্য ড্র করা
+        if(!dynamicModal) {
+            endTurn();
         }
     }
 
-    updateUI();
+    function endTurn() {
+        turn = (turn + 1) % players.length;
+        updateUI();
+        document.getElementById('roll-btn').disabled = false;
+    }
+
+    function inspectCell(id) {
+        selectedCellId = id;
+        let cell = boardData[id];
+        document.getElementById('inspect-name').innerText = `🔍 ${cell.name}`;
+        
+        let ownerText = owners[id] !== undefined ? players[owners[id]].name : "কেউ না";
+        let rentStructure = cell.price > 0 ? `
+            <br>💸 ভিত্তিমূল্য: ৳${cell.price}
+            <br>💵 সাধারণ ভাড়া: ৳${cell.baseRent}
+            <br>🏠 প্রতি বাড়ির জন্য অতিরিক্ত ভাড়া: ৳${(cell.baseRent * 1.5).toFixed(0)}
+            <br>🏨 হোটেল ভাড়া: ৳${(cell.baseRent * 7)}
+            <br>🔨 অবকাঠামো খরচ: ৳${cell.houseCost} (প্রতিটি বাড়ি/হোটেল)
+            <hr style='border:1px solid #eee;'>
+            🟢 বর্তমান মালিক: <strong>${ownerText}</strong>
+            <br>🏡 মোট বাড়ি: ${houses[id] || 0} টি | 🏨 হোটেল: ${hotels[id] ? "১ টি" : "০ টি"}
+        ` : `यह একটি স্পেশাল স্টপ। কোনো কেনাবেচা সম্ভব নয়।`;
+
+        document.getElementById('inspect-details').innerHTML = rentStructure;
+
+        // Display Structure Controls if Owned by Active Player
+        let buildBtnBox = document.getElementById('build-actions');
+        if(owners[id] === turn && cell.type === 'property') {
+            buildBtnBox.style.display = 'flex';
+        } else {
+            buildBtnBox.style.display = 'none';
+        }
+
+        // Add an Option to put property for auction/marketplace
+        if(owners[id] === turn && cell.type === 'property') {
+            document.getElementById('inspect-details').innerHTML += `
+                <br><button class="btn-small" style="background:#8e44ad; margin-top:10px; width:100%;" onclick="listOnMarket(${id})">🛒 মার্কেটপ্লেসে তুলুন</button>
+            `;
+        }
+    }
+
+    function buildStructure(structType) {
+        if(selectedCellId === null) return;
+        let cell = boardData[selectedCellId];
+        let p = players[turn];
+
+        if(structType === 'house') {
+            let currentHouses = houses[selectedCellId] || 0;
+            if(currentHouses >= 4) {
+                alert("🚨 ৪টি বাড়ি ইতিমধ্যে তৈরি শেষ! এখন আপনি সরাসরি হোটেল তৈরি করতে পারেন।");
+                return;
+            }
+            if(p.money < cell.houseCost) {
+                alert("💸 পর্যাপ্ত টাকা নেই!");
+                return;
+            }
+            p.money -= cell.houseCost;
+            houses[selectedCellId] = currentHouses + 1;
+            logAction(`🔨 ${p.name} <strong>${cell.name}</strong> এ ${houses[selectedCellId]} নম্বর বাড়ি তৈরি করলেন!`);
+        } else if (structType === 'hotel') {
+            let currentHouses = houses[selectedCellId] || 0;
+            if(currentHouses < 4) {
+                alert("🚨 আগে ৪টি বাড়ি ক্রমান্বয়ে সম্পন্ন করতে হবে, তারপরই হোটেল বসানো সম্ভব!");
+                return;
+            }
+            if(hotels[selectedCellId]) {
+                alert("🏨 সর্বোচ্চ ১টি হোটেলই তৈরি করা যায়!");
+                return;
+            }
+            if(p.money < cell.houseCost) {
+                alert("💸 পর্যাপ্ত টাকা নেই!");
+                return;
+            }
+            p.money -= cell.houseCost;
+            hotels[selectedCellId] = 1;
+            houses[selectedCellId] = 0; // Upgrade completes
+            logAction(`🏨 মেগা ডিল! ${p.name} <strong>${cell.name}</strong> এ বিলাসবহুল হোটেল উদ্বোধন করলেন!`);
+        }
+        inspectCell(selectedCellId);
+        updateUI();
+    }
+
+    function listOnMarket(cellId) {
+        let price = prompt("💰 এই প্রপার্টির বিক্রয়মূল্য নির্ধারণ করুন (টাকায় লিখুন):", boardData[cellId].price);
+        let parsedPrice = parseInt(price);
+        if(isNaN(parsedPrice) || parsedPrice <= 0) return;
+
+        marketplace.push({
+            cellId: cellId,
+            sellerIdx: turn,
+            askingPrice: parsedPrice
+        });
+
+        logAction(`🛒 ${players[turn].name} তার মালিকানাধীন <strong>${boardData[cellId].name}</strong> টি ৳${parsedPrice} দামে বিক্রির জন্য মার্কেটপ্লেসে তুলেছেন!`);
+        updateUI();
+        switchTab('tab-market');
+    }
+
+    function buyFromMarket(marketIdx) {
+        let item = marketplace[marketIdx];
+        let cell = boardData[item.cellId];
+        let buyer = players[turn];
+
+        if(turn === item.sellerIdx) {
+            alert("🚨 নিজের প্রপার্টি নিজে কেনা সম্ভব নয়!");
+            return;
+        }
+
+        // Bargain system prompt
+        let confirmBuy = confirm(`🤝 ${players[item.sellerIdx].name} এই জমির জন্য ৳${item.askingPrice} চাচ্ছেন। আপনি কি এই দামে রাজি? (না দিলে দরদাম বাতিল হবে)`);
+        
+        if(confirmBuy) {
+            if(buyer.money < item.askingPrice) {
+                alert("💸 আপনার পর্যাপ্ত টাকা নেই!");
+                return;
+            }
+            buyer.money -= item.askingPrice;
+            players[item.sellerIdx].money += item.askingPrice;
+            owners[item.cellId] = turn; // owner shifts
+            
+            logAction(`🤝 ডিল সফল! ${buyer.name} মার্কেটপ্লেস থেকে ৳${item.askingPrice} মূল্যে <strong>${cell.name}</strong> কিনে নিলেন।`);
+            marketplace.splice(marketIdx, 1);
+            updateUI();
+        }
+    }
+
+    function logAction(msg) {
+        const logBox = document.getElementById('tab-log');
+        logBox.innerHTML += `<div>${msg}</div>`;
+        logBox.scrollTop = logBox.scrollHeight;
+    }
+
+    function updateUI() {
+        drawBoard();
+        
+        // Active display title
+        if(players.length > 0) {
+            document.getElementById('current-turn-title').innerText = `चाल: ${players[turn].name}`;
+            document.getElementById('current-turn-title').style.color = players[turn].color;
+            document.getElementById('player-cash-badge').innerText = `৳${players[turn].money.toFixed(0)}`;
+        }
+
+        // Marketplace Tab UI Update
+        const mList = document.getElementById('market-list');
+        mList.innerHTML = marketplace.length === 0 ? '<p style="color:#aaa;">বর্তমানে কোনো জমি বিক্রির জন্য নেই।</p>' : '';
+        marketplace.forEach((item, idx) => {
+            mList.innerHTML += `
+                <div class="market-item">
+                    <div><strong>${boardData[item.cellId].name}</strong><br><small>মালিক: ${players[item.sellerIdx].name}</small></div>
+                    <div><span style="color:#e67e22; font-weight:bold; margin-right:5px;">৳${item.askingPrice}</span>
+                    <button class="btn-small" onclick="buyFromMarket(${idx})">কিনুন/দামি</button></div>
+                </div>
+            `;
+        });
+
+        // Assets Status Update
+        const statusBox = document.getElementById('tab-status');
+        statusBox.innerHTML = players.map(p => {
+            let ownedProps = boardData.filter(b => owners[b.id] === p.id).map(b => b.name).join(', ');
+            return `
+                <div style="padding:5px; border-bottom:1px solid #ddd;">
+                    <strong style="color:${p.color}">${p.name}</strong>: ৳${p.money.toFixed(0)}
+                    <br><span style="font-size:10px; color:#666;">জমিজমা: ${ownedProps || 'কিছুই নেই'}</span>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        
+        event.target.classList.add('active');
+        document.getElementById(tabId).classList.add('active');
+    }
+
+    function showGameModal(title, text) {
+        document.getElementById('modalTitle').innerText = title;
+        document.getElementById('modalBody').innerText = text;
+        document.getElementById('gameModal').style.display = "block";
+    }
+
+    function closeModal() {
+        document.getElementById('gameModal').style.display = "none";
+        endTurn();
+    }
 </script>
 </body>
 </html>
